@@ -1,23 +1,38 @@
-1. Weather Update App ️
+Project Overview
 
-Displays weather information (UI only).
+This backend manages disaster alerts and calculates safe evacuation routes.
+It provides RESTful APIs to serve data to the frontend application.
 
-Built with HTML, CSS, JavaScript.
+Features
 
-User can see a simple weather interface with static placeholders.
+Manage disaster alerts (create, update, delete, fetch)
 
-2. Tic Tac Toe Game
+Calculate evacuation routes based on user location
 
-Playable Tic Tac Toe game in the browser.
+Store and retrieve data from a database
 
-Built with HTML, CSS, JavaScript.
+RESTful APIs for frontend integration
 
-Interactive game logic handled entirely on the client side.
+API Endpoints (Examples)
 
-3. Calculator App 
+GET /alerts – Fetch all disaster alerts
 
-Simple calculator for basic arithmetic operations.
+POST /alerts – Create a new disaster alert
 
-Built with HTML, CSS, JavaScript.
+GET /routes?start={lat,long}&end={lat,long} – Get evacuation route
 
-Functions entirely on the frontend.
+GET /alerts/{id} – Fetch a specific alert
+
+PUT /alerts/{id} – Update alert
+
+DELETE /alerts/{id} – Delete alert
+
+Future Enhancements
+
+Connect backend to frontend for full-stack functionality
+
+Add user authentication and roles
+
+Integrate real-time disaster APIs
+
+Push notifications for disaster alerts
