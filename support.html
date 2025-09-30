@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Global Disaster Alert and Evacuation Route Planner</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="project.css">
+    <style>
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background: #0056b3;
+            padding: 2rem 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 86, 179, 0.7);
+            text-align: center;
+            max-width: 320px;
+            font-size: 1.25rem;
+            color: #fff;
+            font-weight: 600;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        .popup-content p {
+            margin: 0;
+        }
+
+        .popup-content .emoji {
+            font-size: 2.5rem;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        .popup-content button {
+            margin-top: 1.2rem;
+            padding: 0.5rem 1.4rem;
+            background-color: #003366;
+            border: none;
+            color: #ffffff;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(0, 51, 102, 0.6);
+            transition: background-color 0.3s ease;
+        }
+
+        .popup-content button:hover {
+            background-color: #001f4d;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="page-content">
+        <header>
+            <h1><img src="1-removebg-preview.png" alt="RapidResQ Logo" class="logo"></h1>
+
+            <ul id="nav-menu">
+                <li><a href="project.html" class="nav-animated-link">Home</a></li>
+                <li><a href="toolkit.html" class="nav-animated-link">Toolkit</a></li>
+                <li><a href="news.html" class="nav-animated-link">Latest News</a></li>
+                <li><a href="#support" class="nav-animated-link">Support</a></li>
+                <li><a href="admin.html" class="nav-animated-link">Login</a></li>
+                <li>
+                    <button class="theme-toggle-button" id="theme-toggle" aria-label="Toggle theme">
+                        <img src="https://img.icons8.com/ios-filled/50/FFFFFF/sun.png" alt="Sun Icon"
+                            class="icon sun-icon">
+                        <img src="https://img.icons8.com/ios-filled/50/8892B0/moon-symbol.png" alt="Moon Icon"
+                            class="icon moon-icon">
+                    </button>
+                </li>
+            </ul>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Open navigation menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </header>
+        <nav id="mobile-nav-menu">
+            <button id="mobile-nav-close" aria-label="Close navigation menu">&times;</button>
+            <ul>
+                <li><a href="project.html" class="nav-animated-link">Home</a></li>
+                <li><a href="toolkit.html" class="nav-animated-link">Toolkit</a></li>
+                <li><a href="news.html" class="nav-animated-link">Latest News</a></li>
+                <li><a href="#support" class="nav-animated-link">Support</a></li>
+                <li><a href="admin.html" class="nav-animated-link">Login</a></li>
+            </ul>
+        </nav>
+        <main>
+            <section id="support" class="view-section">
+                <h2>Support & Contact Information</h2>
+                <p>If you need assistance or have any questions, please do not hesitate to reach out to us.</p>
+                <h3>Contact Us</h3>
+                <ul>
+                    <li>Email: <a href="mailto:support@disasteralert.com">support@disasteralert.com</a></li>
+                    <li>Phone: <a href="tel:+18001234567">1-800-123-4567</a></li>
+                    <li>Address: 123 Disaster Preparedness Ave, Safety City, 12345</li>
+                </ul>
+                <h3>Frequently Asked Questions</h3>
+                <p>Find answers to common questions in our FAQ section to get immediate help.</p>
+            </section>
+            <section id="feedback-section" class="view-section">
+                <h2>Feedback</h2>
+                <form id="feedback-form">
+                    <label for="feedback-input">Your feedback:</label><br />
+                    <textarea id="feedback-input" name="feedback" rows="4" placeholder="Write your feedback here..."
+                        required></textarea><br />
+                    <button type="submit">Submit Feedback</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2025 Disaster Alert and Evacuation Route Planner</p>
+    </footer>
+
+    <div id="feedback-popup" class="popup hidden" role="alert" aria-live="assertive">
+        <div class="popup-content">
+            <span class="emoji">😊</span>
+            <p>Thank you for your feedback!</p>
+            <button id="close-popup">Close</button>
+        </div>
+    </div>
+
+    <script src="loader.js" defer></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const themeToggleButton = document.getElementById("theme-toggle");
+            const body = document.body;
+
+            function applyTheme(theme) {
+                if (theme === "light") {
+                    body.classList.add("light-mode");
+                    body.classList.remove("dark-mode");
+                } else {
+                    body.classList.add("dark-mode");
+                    body.classList.remove("light-mode");
+                }
+            }
+
+            themeToggleButton.addEventListener("click", () => {
+                const newTheme = body.classList.contains("dark-mode") ? "light" : "dark";
+                applyTheme(newTheme);
+                localStorage.setItem("theme", newTheme);
+            });
+
+            let userMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
+            applyTheme(userMode);
+
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (e.matches) {
+                    applyTheme("dark");
+                } else {
+                    applyTheme("light");
+                }
+            });
+
+            const mobileNavToggle = document.getElementById('mobile-nav-toggle');
+            const mobileNavMenu = document.getElementById('mobile-nav-menu');
+            const mobileNavClose = document.getElementById('mobile-nav-close');
+            const mobileNavLinks = mobileNavMenu.querySelectorAll('a');
+
+            function openMobileMenu() {
+                mobileNavMenu.classList.add('active');
+            }
+            function closeMobileMenu() {
+                mobileNavMenu.classList.remove('active');
+            }
+
+            mobileNavToggle.addEventListener('click', openMobileMenu);
+            mobileNavClose.addEventListener('click', closeMobileMenu);
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', closeMobileMenu);
+            });
+
+            const feedbackForm = document.getElementById("feedback-form");
+            const feedbackPopup = document.getElementById("feedback-popup");
+            const closePopupBtn = document.getElementById("close-popup");
+            feedbackForm.addEventListener("keyup", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    feedbackPopup.classList.remove("hidden");
+                    feedbackForm.reset();
+                }
+            });
+            feedbackForm.addEventListener("submit", (event) => {
+                event.preventDefault();
+                feedbackPopup.classList.remove("hidden");
+                feedbackForm.reset();
+            });
+
+            closePopupBtn.addEventListener("click", function () {
+                feedbackPopup.classList.add("hidden");
+            });
+
+            feedbackPopup.addEventListener("click", function (e) {
+                if (e.target === feedbackPopup) {
+                    feedbackPopup.classList.add("hidden");
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
